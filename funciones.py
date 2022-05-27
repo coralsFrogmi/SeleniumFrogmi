@@ -87,21 +87,41 @@ def return_to_dashboard(driver):
         print("[!]  Logo not found")
         return
 
-if __name__ == '__main__':
+def dashboard_info(driver):
+    shortWait = WebDriverWait(driver,10)
+    try:
+        shortWait.until(EC.visibility_of_element_located((By.XPATH,"//*[@class = 'dashboard-content']")))
+    except:
+        print("[!] Dashboard info not found")
 
+    dashboard = driver.find_elements(By.XPATH,"//*[@class = 'dashboard-content']/div/div")
+    
+    for element in dashboard:
+        print("-"+ element.text +"-")
+
+def change_date_range(driver,range):
+    shortWait = WebDriverWait(driver,10)
+    try:
+        shortWait.until(EC.visibility_of_element_located((By.XPATH,"//*[@class = 'row title-and-filter']")))
+    except:
+        print("[!] Title & Filter not found")
+        return
+
+    dateRange = driver.find_element(By.CSS_SELECTOR,"div.reportrange.pull-right")
+    dateRange.click()
+
+    try:
+        driver.find_element(By.XPATH,"//*[contains(text(), '"+range+"')]").click()
+        print("[->] Range changed to: "+ range)
+    except:
+        print("[!] Could't click: "+ range)
+    
+
+if __name__ == '__main__':
     chromeWindow = chrome_start()
 
     login_dev(chromeWindow)
+    change_date_range(chromeWindow,"Último Mes")
 
-    click_on_mainHeader(chromeWindow,"CPG")
-
-    return_to_dashboard(chromeWindow)
-    click_on_dashboardSidebar(chromeWindow, "Negocio")
-
-    click_on_mainHeader(chromeWindow,"Rutinas")
-    
-    return_to_dashboard(chromeWindow)
-    click_on_dashboardSidebar(chromeWindow, "Resumen")
-
-    chromeWindow.close()
+    #chromeWindow.close()
     print("\n---- End of test ----")
